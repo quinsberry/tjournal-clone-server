@@ -4,6 +4,7 @@ import { UserModule } from './v1/user/user.module';
 import { PostModule } from './v1/post/post.module';
 import { CommentModule } from './v1/comment/comment.module';
 import { AuthModule } from './v1/auth/auth.module';
+import { TagModule } from './v1/tag/tag.module';
 
 export const versionRoutes: Routes = [
     {
@@ -25,6 +26,10 @@ export const versionRoutes: Routes = [
             {
                 path: '/auth',
                 module: AuthModule,
+            },
+            {
+                path: '/tags',
+                module: TagModule,
             },
         ],
     },

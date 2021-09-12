@@ -2,6 +2,7 @@ import { User } from '../entities/user.entity';
 import { Comment } from '../entities/comment.entity';
 import { Post } from '../entities/post.entity';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
+import { Tag } from '../entities/tag.entity';
 
 export class ConfigService {
     static getEnv(key: string): string {
@@ -21,8 +22,8 @@ export class ConfigService {
             username: this.getEnv('DB_USER'),
             password: this.getEnv('DB_PASSWORD'),
             database: this.getEnv('DB_NAME'),
-            entities: [User, Comment, Post],
-            synchronize: !this.isProduction,
+            entities: [User, Comment, Post, Tag],
+            synchronize: !ConfigService.isProduction,
         };
     }
 }

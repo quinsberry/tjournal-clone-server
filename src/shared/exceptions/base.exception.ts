@@ -7,5 +7,5 @@ interface BaseExceptionConfig {
 }
 
 export function BaseException({ statusCode, message, errors }: BaseExceptionConfig) {
-    return new HttpException({ statusCode, message, errors: errors ?? {} }, statusCode);
+    throw new HttpException({ statusCode, message, errors }, statusCode);
 }
