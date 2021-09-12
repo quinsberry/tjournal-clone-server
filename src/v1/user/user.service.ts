@@ -8,7 +8,7 @@ export class UserService {
     constructor(@InjectRepository(UserRepository) private readonly userRepository: UserRepository) {}
 
     findAll() {
-        this.userRepository.findAll();
+        return this.userRepository.findAll();
     }
 
     create(dto: CreateUserDto) {

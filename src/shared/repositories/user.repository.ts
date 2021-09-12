@@ -9,7 +9,7 @@ export class UserRepository extends Repository<User> {
     }
 
     findAll() {
-        this.findAll();
+        return this.find();
     }
 
     createUser(dto: CreateUserDto) {
