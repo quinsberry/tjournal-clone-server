@@ -1,8 +1,7 @@
-import { EntityRepository, Repository } from 'typeorm';
+import { createQueryBuilder, EntityRepository, Repository } from 'typeorm';
 import { Tag } from '../entities/tag.entity';
 import { CreateTagDto } from '../../v1/tag/dto/create-tag.dto';
 import { UpdateTagDto } from '../../v1/tag/dto/update-tag.dto';
-import { HttpStatus } from '@nestjs/common';
 
 @EntityRepository(Tag)
 export class TagRepository extends Repository<Tag> {
@@ -18,12 +17,18 @@ export class TagRepository extends Repository<Tag> {
         return this.save(dto);
     }
 
-    async updateTag(id: number, dto: UpdateTagDto) {
+    updateTag(id: number, dto: UpdateTagDto) {
         return this.update(id, dto);
     }
 
-    findById(id: number) {
-        return this.findOne(id);
+    async findById(ids: number | number[]) {
+        if (Array.isArray(ids)) {
+            return createQueryBuilder(Tag, 'tag')
+                .where('tag.id IN (:...ids)', { ids })
+                .orderBy('tag.createdAt')
+                .getMany();
+        }
+        return this.findOne({ where: { id: ids } });
     }
 
     removeById(id: number) {

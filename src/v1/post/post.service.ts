@@ -1,26 +1,38 @@
 import { Injectable } from '@nestjs/common';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { PostRepository } from '../../shared/repositories/post.repository';
+import { TagRepository } from '../../shared/repositories/tag.repository';
 
 @Injectable()
 export class PostService {
-    create(createPostDto: CreatePostDto) {
-        return 'This action adds a new post';
+    constructor(
+        @InjectRepository(PostRepository) private readonly postRepository: PostRepository,
+        @InjectRepository(TagRepository) private readonly tagRepository: TagRepository,
+    ) {}
+
+    async create(dto: CreatePostDto) {
+        const tags = await this.tagRepository.findById(dto.tags);
+        const updatedObj = { ...dto, tags: Array.isArray(tags) ? tags : [tags] };
+        return this.postRepository.createPost(updatedObj);
     }
 
     findAll() {
-        return `This action returns all post`;
+        return this.postRepository.findAll();
     }
 
     findOne(id: number) {
-        return `This action returns a #${id} post`;
+        return this.postRepository.findById(id);
     }
 
-    update(id: number, updatePostDto: UpdatePostDto) {
-        return `This action updates a #${id} post`;
+    async update(id: number, dto: UpdatePostDto) {
+        const tags = await this.tagRepository.findById(dto.tags);
+        const updatedObj = { ...dto, tags: Array.isArray(tags) ? tags : [tags] };
+        return this.postRepository.updatePost(id, updatedObj);
     }
 
     remove(id: number) {
-        return `This action removes a #${id} post`;
+        return this.postRepository.removeById(id);
     }
 }

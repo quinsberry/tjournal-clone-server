@@ -2,7 +2,6 @@ import { BaseEntity as TypeOrmBaseEntity, CreateDateColumn, PrimaryGeneratedColu
 import { classToPlain, Exclude } from 'class-transformer';
 
 export abstract class BaseEntity extends TypeOrmBaseEntity {
-    @Exclude()
     @PrimaryGeneratedColumn()
     id: number;
 

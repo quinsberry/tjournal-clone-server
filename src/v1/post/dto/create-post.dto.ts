@@ -1,4 +1,4 @@
-import { IsOptional, IsString } from 'class-validator';
+import { IsArray, IsOptional, IsString } from 'class-validator';
 
 export class CreatePostDto {
     @IsString({ message: 'Should be a string' })
@@ -8,6 +8,6 @@ export class CreatePostDto {
     body: string;
 
     @IsOptional()
-    @IsString({ message: 'Should be an array of strings', each: true })
-    tags: string[];
+    @IsArray({ message: 'Should be an array of numbers' })
+    tags: number[];
 }

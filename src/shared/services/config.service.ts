@@ -23,7 +23,8 @@ export class ConfigService {
             password: this.getEnv('DB_PASSWORD'),
             database: this.getEnv('DB_NAME'),
             entities: [User, Comment, Post, Tag],
-            synchronize: !ConfigService.isProduction,
+            // synchronize: !ConfigService.isProduction, // TODO: Figure out this moment
+            synchronize: true,
         };
     }
 }
