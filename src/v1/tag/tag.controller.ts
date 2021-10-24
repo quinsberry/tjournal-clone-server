@@ -1,9 +1,7 @@
-import { Body, Controller, Delete, Get, HttpStatus, Param, Patch, Post, Res } from '@nestjs/common';
-import { Response } from 'express';
+import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
 import { TagService } from './tag.service';
 import { CreateTagDto } from './dto/create-tag.dto';
 import { UpdateTagDto } from './dto/update-tag.dto';
-import { BaseException } from '../../shared/exceptions/base.exception';
 
 @Controller()
 export class TagController {
@@ -25,15 +23,8 @@ export class TagController {
     }
 
     @Patch(':id')
-    async update(@Param('id') id: string, @Body() dto: UpdateTagDto, @Res() res: Response) {
-        const response = await this.tagService.update(+id, dto);
-        if (response.affected === 0) {
-            BaseException({
-                statusCode: HttpStatus.NOT_FOUND,
-                message: 'Tag has not been found',
-            });
-        }
-        return res.status(HttpStatus.NO_CONTENT).send();
+    update(@Param('id') id: string, @Body() dto: UpdateTagDto) {
+        return this.tagService.update(+id, dto);
     }
 
     @Delete(':id')

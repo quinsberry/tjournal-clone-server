@@ -1,6 +1,4 @@
-import { IsString } from 'class-validator';
+import { PickType } from '@nestjs/mapped-types';
+import { CreateTagDto } from './create-tag.dto';
 
-export class UpdateTagDto {
-    @IsString({ message: 'Should be a string' })
-    title: string;
-}
+export class UpdateTagDto extends PickType(CreateTagDto, ['title'] as const) {}

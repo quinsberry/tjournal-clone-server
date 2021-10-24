@@ -22,6 +22,6 @@ export class Post extends BaseEntity {
     @ManyToOne(() => User, (user) => user.posts)
     user: User;
 
-    @ManyToMany(() => Tag, (tag) => tag.posts)
+    @ManyToMany(() => Tag, (tag) => tag.posts, { onDelete: 'CASCADE' })
     tags: Tag[];
 }

@@ -1,9 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PostRepository } from '../../shared/repositories/post.repository';
 import { TagRepository } from '../../shared/repositories/tag.repository';
+import { SerializedResponse, SerializerService } from '../../shared/services/serializer.service';
+import { Post } from '../../shared/entities/post.entity';
 
 @Injectable()
 export class PostService {
@@ -18,8 +20,9 @@ export class PostService {
         return this.postRepository.createPost(updatedObj);
     }
 
-    findAll() {
-        return this.postRepository.findAll();
+    async findAll(): Promise<SerializedResponse<Post[]>> {
+        const posts = await this.postRepository.findAll();
+        return SerializerService.response(posts);
     }
 
     findOne(id: number) {
@@ -32,7 +35,8 @@ export class PostService {
         return this.postRepository.updatePost(id, updatedObj);
     }
 
-    remove(id: number) {
-        return this.postRepository.removeById(id);
+    async remove(id: number) {
+        await this.postRepository.removeById(id);
+        return HttpStatus.NO_CONTENT;
     }
 }

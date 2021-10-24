@@ -3,6 +3,8 @@ import { Post } from '../entities/post.entity';
 import { CreatePostDto } from '../../v1/post/dto/create-post.dto';
 import { UpdatePostDto } from '../../v1/post/dto/update-post.dto';
 import { Tag } from '../entities/tag.entity';
+import { HttpException, HttpStatus, NotFoundException } from '@nestjs/common';
+import { validateFirstElementInList } from '../utils/checkers';
 
 export interface CorrectCreatePostDto extends Omit<CreatePostDto, 'tags'> {
     tags: Tag[];
@@ -26,15 +28,31 @@ export class PostRepository extends Repository<Post> {
         return this.save(dto);
     }
 
-    updatePost(id: number, dto: CorrectUpdatePostDto) {
-        return this.update(id, dto);
+    async updatePost(id: number, dto: CorrectUpdatePostDto) {
+        const post = await this.findById(id);
+        Object.keys(dto).forEach((key) => {
+            if (key === 'tags' && !validateFirstElementInList(dto.tags, (_) => !!_)) {
+                return;
+            }
+            post[key] = dto[key];
+        });
+        return await post.save();
     }
 
-    findById(id: number) {
-        return this.findOne(id);
+    async findById(id: number) {
+        try {
+            return await this.findOneOrFail(id, { relations: ['tags'] });
+        } catch (e) {
+            throw new NotFoundException('Post not found');
+        }
     }
 
-    removeById(id: number) {
-        return this.delete(id);
+    async removeById(id: number) {
+        await this.findById(id);
+        const { affected } = await this.delete(id);
+        if (!affected) {
+            throw new HttpException('Post deletion was failed', HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return !!affected;
     }
 }

@@ -15,7 +15,7 @@ export class Tag extends BaseEntity {
     @Column({ unique: true })
     value: string;
 
-    @ManyToMany(() => Post, (post) => post.tags, { cascade: true })
+    @ManyToMany(() => Post, (post) => post.tags, { cascade: true, onDelete: 'CASCADE' })
     @JoinTable({
         name: 'tag_posts',
         joinColumn: {
