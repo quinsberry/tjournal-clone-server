@@ -14,6 +14,7 @@ export class ConfigService {
     }
 
     static getTypeOrmConfig(): TypeOrmModuleOptions {
+        console.log(__dirname);
         return {
             type: 'postgres',
 

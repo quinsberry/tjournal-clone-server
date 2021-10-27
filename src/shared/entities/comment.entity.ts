@@ -1,5 +1,7 @@
-import { Entity } from 'typeorm';
+import { Column, Entity, ManyToOne } from 'typeorm';
 import { BaseEntity } from './base.entity';
+import { User } from './user.entity';
+import { Post } from './post.entity';
 
 @Entity('comments')
 export class Comment extends BaseEntity {
@@ -7,4 +9,19 @@ export class Comment extends BaseEntity {
         super();
         Object.assign(this, comment);
     }
+
+    @Column()
+    text: string;
+
+    @ManyToOne(() => User, {
+        nullable: false,
+        onDelete: 'CASCADE',
+    })
+    user: User;
+
+    @ManyToOne(() => Post, {
+        nullable: false,
+        onDelete: 'CASCADE',
+    })
+    post: Post;
 }

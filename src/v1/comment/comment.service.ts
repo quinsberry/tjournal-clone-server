@@ -1,26 +1,44 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { PostRepository } from '../../shared/repositories/post.repository';
+import { CommentRepository } from '../../shared/repositories/comment.repository';
+import { SerializedResponse, SerializerService } from '../../shared/services/serializer.service';
+import { Comment } from '../../shared/entities/comment.entity';
 
 @Injectable()
 export class CommentService {
-    create(createCommentDto: CreateCommentDto) {
-        return 'This action adds a new comment';
+    constructor(
+        @InjectRepository(CommentRepository) private readonly commentRepository: CommentRepository,
+        @InjectRepository(PostRepository) private readonly postRepository: PostRepository,
+    ) {}
+
+    create(dto: CreateCommentDto) {
+        return this.commentRepository.createComment(dto);
     }
 
-    findAll() {
-        return `This action returns all comment`;
+    async findAll(): Promise<SerializedResponse<Comment[]>> {
+        const comments = await this.commentRepository.findAll();
+        return SerializerService.response(comments);
     }
 
     findOne(id: number) {
-        return `This action returns a #${id} comment`;
+        return this.commentRepository.findById(id);
     }
 
-    update(id: number, updateCommentDto: UpdateCommentDto) {
-        return `This action updates a #${id} comment`;
+    async update(id: number, dto: UpdateCommentDto) {
+        const post = await this.postRepository.findById(dto.postId, ['comments']);
+        const isCommentExist = post.comments.some((comment) => comment.id === id);
+        if (!isCommentExist) {
+            throw new BadRequestException(`Post with id ${post.id} has no comment with id ${id}`);
+        }
+        await this.commentRepository.updateComment(id, dto.text);
+        return HttpStatus.NO_CONTENT;
     }
 
-    remove(id: number) {
-        return `This action removes a #${id} comment`;
+    async remove(id: number) {
+        await this.commentRepository.removeById(id);
+        return HttpStatus.NO_CONTENT;
     }
 }

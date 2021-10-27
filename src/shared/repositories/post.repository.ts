@@ -5,14 +5,18 @@ import { UpdatePostDto } from '../../v1/post/dto/update-post.dto';
 import { Tag } from '../entities/tag.entity';
 import { HttpException, HttpStatus, NotFoundException } from '@nestjs/common';
 import { validateFirstElementInList } from '../utils/checkers';
+import { User } from '../entities/user.entity';
 
 export interface CorrectCreatePostDto extends Omit<CreatePostDto, 'tags'> {
     tags: Tag[];
+    user: User;
 }
 
 export interface CorrectUpdatePostDto extends Omit<UpdatePostDto, 'tags'> {
     tags: Tag[];
 }
+
+type PostRelations = 'tags' | 'comments' | 'user';
 
 @EntityRepository(Post)
 export class PostRepository extends Repository<Post> {
@@ -29,7 +33,7 @@ export class PostRepository extends Repository<Post> {
     }
 
     async updatePost(id: number, dto: CorrectUpdatePostDto) {
-        const post = await this.findById(id);
+        const post = await this.findById(id, ['tags', 'comments']);
         Object.keys(dto).forEach((key) => {
             if (key === 'tags' && !validateFirstElementInList(dto.tags, (_) => !!_)) {
                 return;
@@ -39,9 +43,9 @@ export class PostRepository extends Repository<Post> {
         return await post.save();
     }
 
-    async findById(id: number) {
+    async findById(id: number, relations?: PostRelations[]) {
         try {
-            return await this.findOneOrFail(id, { relations: ['tags'] });
+            return await this.findOneOrFail(id, { relations });
         } catch (e) {
             throw new NotFoundException('Post not found');
         }
