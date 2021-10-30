@@ -11,26 +11,11 @@ export const versionRoutes: Routes = [
         path: '/v1',
         module: V1Module,
         children: [
-            {
-                path: '/users',
-                module: UserModule,
-            },
-            {
-                path: '/posts',
-                module: PostModule,
-            },
-            {
-                path: '/comments',
-                module: CommentModule,
-            },
-            {
-                path: '/auth',
-                module: AuthModule,
-            },
-            {
-                path: '/tags',
-                module: TagModule,
-            },
+            { path: '/users', module: UserModule },
+            { path: '/posts', module: PostModule },
+            { path: '/comments', module: CommentModule },
+            { path: '/auth', module: AuthModule },
+            { path: '/tags', module: TagModule },
         ],
     },
 ];

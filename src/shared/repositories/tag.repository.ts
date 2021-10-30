@@ -5,6 +5,8 @@ import { UpdateTagDto } from '../../v1/tag/dto/update-tag.dto';
 import { validateFirstElementInList } from '../utils/checkers';
 import { HttpException, HttpStatus, NotFoundException } from '@nestjs/common';
 
+type TagRelations = 'posts';
+
 @EntityRepository(Tag)
 export class TagRepository extends Repository<Tag> {
     constructor() {
@@ -27,7 +29,10 @@ export class TagRepository extends Repository<Tag> {
         return await tag.save();
     }
 
-    async findById<T extends number | number[]>(ids: T): Promise<T extends number ? Promise<Tag> : Promise<Tag[]>> {
+    async findById<T extends number | number[]>(
+        ids: T,
+        relations?: TagRelations[],
+    ): Promise<T extends number ? Promise<Tag> : Promise<Tag[]>> {
         if (Array.isArray(ids)) {
             if (validateFirstElementInList(ids, (_) => !_)) {
                 return [];
@@ -38,7 +43,7 @@ export class TagRepository extends Repository<Tag> {
                 .getMany();
         } else {
             try {
-                return await this.findOneOrFail(ids);
+                return await this.findOneOrFail(ids, { relations });
             } catch (e) {
                 throw new NotFoundException('Tag not found');
             }

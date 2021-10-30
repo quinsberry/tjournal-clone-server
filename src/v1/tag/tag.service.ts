@@ -20,7 +20,7 @@ export class TagService {
     }
 
     findOne(id: number) {
-        return this.tagRepository.findById(id);
+        return this.tagRepository.findById(id, ['posts']);
     }
 
     update(id: number, dto: UpdateTagDto) {
