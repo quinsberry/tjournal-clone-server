@@ -22,10 +22,10 @@ Server side of tjournal-clone app.
         - [ ] *Ranking CRUD*
 - [ ] Users
     - [ ] Popular
-    - [ ] All users
+    - [X] All users
         - [ ] *Ranking CRUD*
     - [X] Profile editing
-    - [ ] Users search
+    - [X] Users search
     - [X] Registration
     - [X] Authorization
     - [ ] Password reset

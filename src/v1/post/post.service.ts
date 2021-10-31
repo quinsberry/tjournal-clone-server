@@ -8,6 +8,7 @@ import { SerializedResponse, SerializerService } from '../../shared/services/ser
 import { Post } from '../../shared/entities/post.entity';
 import { UserRepository } from '../../shared/repositories/user.repository';
 import { SearchPostDto } from './dto/search-post.dto';
+import { User } from '../../shared/entities/user.entity';
 
 @Injectable()
 export class PostService {
@@ -17,10 +18,8 @@ export class PostService {
         @InjectRepository(TagRepository) private readonly tagRepository: TagRepository,
     ) {}
 
-    async create(dto: CreatePostDto) {
+    async create(user: User, dto: CreatePostDto) {
         const tags = await this.tagRepository.findById(dto.tags);
-        const mockedUserId = 11;
-        const user = await this.userRepository.findById(mockedUserId);
         const updatedObj = {
             ...dto,
             tags: Array.isArray(tags) ? tags : [tags],
@@ -54,8 +53,9 @@ export class PostService {
         return this.postRepository.findByIdWithViews(id);
     }
 
-    async update(id: number, dto: UpdatePostDto) {
+    async update(id: number, user: User, dto: UpdatePostDto) {
         const tags = await this.tagRepository.findById(dto.tags);
+        await this.userRepository.findUserByPost(user.id, id);
         const updatedObj = { ...dto, tags: Array.isArray(tags) ? tags : [tags] };
         return this.postRepository.updatePost(id, updatedObj);
     }

@@ -4,6 +4,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { FindUserDto } from './dto/find-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { SerializerService } from '../../shared/services/serializer.service';
+import { SearchUserDto } from './dto/search-user.dto';
 
 @Injectable()
 export class UserService {
@@ -23,6 +25,14 @@ export class UserService {
 
     findByProps(dto: FindUserDto) {
         return this.userRepository.findByProps(dto);
+    }
+
+    async search(dto: SearchUserDto) {
+        const [users, total] = await this.userRepository.search(dto);
+        return SerializerService.response({
+            items: users,
+            total,
+        });
     }
 
     create(dto: CreateUserDto) {
