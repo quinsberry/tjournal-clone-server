@@ -6,6 +6,7 @@ import { Tag } from '../entities/tag.entity';
 import { HttpException, HttpStatus, NotFoundException } from '@nestjs/common';
 import { validateFirstElementInList } from '../utils/checkers';
 import { User } from '../entities/user.entity';
+import { SearchPostDto } from '../../v1/post/dto/search-post.dto';
 
 export interface CorrectCreatePostDto extends Omit<CreatePostDto, 'tags'> {
     tags: Tag[];
@@ -18,6 +19,11 @@ export interface CorrectUpdatePostDto extends Omit<UpdatePostDto, 'tags'> {
 
 type PostRelations = 'tags' | 'comments' | 'user';
 
+enum SearchDefaults {
+    Limit = 10,
+    Skip = 0,
+}
+
 @EntityRepository(Post)
 export class PostRepository extends Repository<Post> {
     constructor() {
@@ -25,7 +31,56 @@ export class PostRepository extends Repository<Post> {
     }
 
     findAll() {
-        return this.find({ relations: ['tags'] });
+        return this.find({
+            order: { createdAt: 'DESC' },
+            relations: ['tags'],
+        });
+    }
+
+    async findByIdWithViews(id: number) {
+        const post = await this.findById(id, ['tags', 'comments', 'user']);
+        post.views += 1;
+        return post.save();
+    }
+
+    findPopular() {
+        return this.createQueryBuilder('p')
+            .leftJoinAndSelect('p.tags', 'tags')
+            .orderBy('views', 'DESC')
+            .limit(10)
+            .getManyAndCount();
+    }
+
+    search(dto: SearchPostDto) {
+        const qb = this.createQueryBuilder('p')
+            .leftJoinAndSelect('p.tags', 'tags')
+            .limit(dto.take ?? SearchDefaults.Limit)
+            .offset(dto.skip ?? SearchDefaults.Skip);
+
+        if (dto.views) {
+            qb.orderBy('views', dto.views);
+        }
+
+        if (dto.body) {
+            qb.andWhere('p.body ILIKE :body', { body: `%${dto.body}%` });
+        }
+
+        if (dto.title) {
+            qb.andWhere('p.title ILIKE :title', { title: `%${dto.title}%` });
+        }
+
+        if (dto.tags) {
+            if (Array.isArray(dto.tags)) {
+                // TODO: It doesn't work properly. Selecting just the last tag id.
+                dto.tags.map((tag) => {
+                    qb.andWhere('tags.id = :tag', { tag });
+                });
+            } else {
+                qb.andWhere('tags.id = :id', { id: dto.tags });
+            }
+        }
+
+        return qb.getManyAndCount();
     }
 
     createPost(dto: CorrectCreatePostDto) {

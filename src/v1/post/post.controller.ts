@@ -1,12 +1,12 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { PostService } from './post.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
+import { SearchPostDto } from './dto/search-post.dto';
 
 @Controller()
 export class PostController {
-    constructor(private readonly postService: PostService) {
-    }
+    constructor(private readonly postService: PostService) {}
 
     @Post()
     create(@Body() createPostDto: CreatePostDto) {
@@ -16,6 +16,16 @@ export class PostController {
     @Get()
     findAll() {
         return this.postService.findAll();
+    }
+
+    @Get('/popular')
+    getPopular() {
+        return this.postService.findPopular();
+    }
+
+    @Get('/search')
+    searchPosts(@Query() dto: SearchPostDto) {
+        return this.postService.search(dto);
     }
 
     @Get(':id')

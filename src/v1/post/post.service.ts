@@ -7,6 +7,7 @@ import { TagRepository } from '../../shared/repositories/tag.repository';
 import { SerializedResponse, SerializerService } from '../../shared/services/serializer.service';
 import { Post } from '../../shared/entities/post.entity';
 import { UserRepository } from '../../shared/repositories/user.repository';
+import { SearchPostDto } from './dto/search-post.dto';
 
 @Injectable()
 export class PostService {
@@ -33,8 +34,24 @@ export class PostService {
         return SerializerService.response(posts);
     }
 
+    async findPopular() {
+        const [posts, total] = await this.postRepository.findPopular();
+        return SerializerService.response({
+            items: posts,
+            total,
+        });
+    }
+
+    async search(dto: SearchPostDto) {
+        const [posts, total] = await this.postRepository.search(dto);
+        return SerializerService.response({
+            items: posts,
+            total,
+        });
+    }
+
     findOne(id: number) {
-        return this.postRepository.findById(id, ['tags', 'comments', 'user']);
+        return this.postRepository.findByIdWithViews(id);
     }
 
     async update(id: number, dto: UpdatePostDto) {

@@ -9,11 +9,11 @@ Server side of tjournal-clone app.
 ##Features schema
 - [ ] Posts
     - [x] Fresh
-    - [ ] Popular
+    - [X] Popular
     - [X] CRUD
     - [ ] *Add to Favorites*
-    - [ ] Amount of views
-    - [ ] Posts search
+    - [X] Increasing views
+    - [X] Posts search
 - [ ] Comments
     - [ ] Realtime comments (sockets)
     - [X] CRUD
