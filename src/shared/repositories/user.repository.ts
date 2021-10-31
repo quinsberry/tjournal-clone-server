@@ -25,22 +25,9 @@ export class UserRepository extends Repository<User> {
         }
     }
 
-    // async findByCreds(dto: LoginUserDto) {
-    //     try {
-    //         const { password, ...props } = dto;
-    //         const user = await this.findOneOrFail(props);
-    //         if (!user.comparePassword(password)) {
-    //             throw new UnauthorizedException('User or password are not valid');
-    //         }
-    //         return user;
-    //     } catch (e) {
-    //         throw new NotFoundException('User not found');
-    //     }
-    // }
-
-    findByProps(dto: FindUserDto) {
+    async findByProps(dto: FindUserDto) {
         try {
-            return this.findOneOrFail(dto);
+            return await this.findOneOrFail(dto);
         } catch (e) {
             throw new NotFoundException('User not found');
         }
@@ -48,7 +35,10 @@ export class UserRepository extends Repository<User> {
 
     async createUser(dto: CreateUserDto) {
         try {
-            return await this.save(dto);
+            const user = new User(dto);
+            await user.save();
+            delete user.password;
+            return user;
         } catch (e) {
             if (/(email)[\s\S]+(already exists)/.test(e.detail)) {
                 throw new BadRequestException('Account with this email already exists.');

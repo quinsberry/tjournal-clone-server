@@ -1,4 +1,4 @@
-import { ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { CreateUserDto } from '../user/dto/create-user.dto';
 import { UserService } from '../user/user.service';
 import { JwtService } from '@nestjs/jwt';
@@ -20,16 +20,6 @@ export class AuthService {
         } catch (err) {
             throw new ForbiddenException('Registration error');
         }
-    }
-
-    async validateUser(email: string, password: string) {
-        const user = await this.userService.findByProps({ email });
-
-        if (!user.comparePassword(password)) {
-            throw new UnauthorizedException('User or password are not valid');
-        }
-
-        return user;
     }
 
     generateJwtToken(data: { id: number; email: string }) {

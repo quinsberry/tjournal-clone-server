@@ -1,4 +1,5 @@
-import { Column, Entity, OneToMany } from 'typeorm';
+import { BeforeInsert, Column, Entity, OneToMany } from 'typeorm';
+import * as bcrypt from 'bcrypt';
 import { BaseEntity } from './base.entity';
 import { Exclude } from 'class-transformer';
 import { Post } from './post.entity';
@@ -29,11 +30,17 @@ export class User extends BaseEntity {
     @Column({ default: false })
     activated: boolean;
 
-    @Exclude()
+    // @Exclude()
+    @Exclude({ toPlainOnly: true })
     @Column()
     password: string;
 
-    comparePassword(password: string): boolean {
-        return this.password === password;
+    @BeforeInsert()
+    async hashPassword() {
+        this.password = await bcrypt.hash(this.password, 6);
+    }
+
+    comparePassword(password: string): Promise<boolean> {
+        return bcrypt.compare(password, this.password);
     }
 }
