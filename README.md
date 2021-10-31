@@ -6,7 +6,7 @@ Server side of tjournal-clone app.
 **Technologies**: NestJS, Typeorm <br>
 **Database**: PostgreSQL
 
-##Features schema
+## Features schema
 - [ ] Posts
     - [x] Fresh
     - [X] Popular
@@ -24,10 +24,10 @@ Server side of tjournal-clone app.
     - [ ] Popular
     - [ ] All users
         - [ ] *Ranking CRUD*
-    - [ ] Profile editing
+    - [X] Profile editing
     - [ ] Users search
-    - [ ] Registration
-    - [ ] Authorization
+    - [X] Registration
+    - [X] Authorization
     - [ ] Password reset
 - [X] Tags
     - [X] CRUD

@@ -12,7 +12,6 @@ export class ValidationPipe implements PipeTransform<any> {
 
             if (errors.length) {
                 const messages = errors.reduce((acc, err) => {
-                    console.log(err)
                     acc[err.property] = Object.values(err.constraints);
                     return acc;
                 }, {});

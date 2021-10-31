@@ -32,4 +32,8 @@ export class User extends BaseEntity {
     @Exclude()
     @Column()
     password: string;
+
+    comparePassword(password: string): boolean {
+        return this.password === password;
+    }
 }

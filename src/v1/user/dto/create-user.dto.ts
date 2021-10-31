@@ -3,6 +3,7 @@ import { IsEmail, IsOptional, IsString, Length, Matches } from 'class-validator'
 export class CreateUserDto {
     @IsOptional()
     @Length(3, undefined, { message: 'Full name should contain at least 3 characters' })
+    @IsString({ message: 'Should be a string' })
     readonly fullName: string;
 
     @IsEmail(undefined, { message: 'Invalid email' })

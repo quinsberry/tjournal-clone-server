@@ -1,7 +1,9 @@
 import { EntityRepository, Repository } from 'typeorm';
 import { User } from '../entities/user.entity';
 import { CreateUserDto } from '../../v1/user/dto/create-user.dto';
-import { HttpException, HttpStatus, NotFoundException } from '@nestjs/common';
+import { BadRequestException, HttpException, HttpStatus, NotFoundException } from '@nestjs/common';
+import { FindUserDto } from '../../v1/user/dto/find-user.dto';
+import { UpdateUserDto } from '../../v1/user/dto/update-user.dto';
 
 type UserRelations = 'posts' | 'comments';
 
@@ -23,8 +25,47 @@ export class UserRepository extends Repository<User> {
         }
     }
 
-    createUser(dto: CreateUserDto) {
-        return this.save(dto);
+    // async findByCreds(dto: LoginUserDto) {
+    //     try {
+    //         const { password, ...props } = dto;
+    //         const user = await this.findOneOrFail(props);
+    //         if (!user.comparePassword(password)) {
+    //             throw new UnauthorizedException('User or password are not valid');
+    //         }
+    //         return user;
+    //     } catch (e) {
+    //         throw new NotFoundException('User not found');
+    //     }
+    // }
+
+    findByProps(dto: FindUserDto) {
+        try {
+            return this.findOneOrFail(dto);
+        } catch (e) {
+            throw new NotFoundException('User not found');
+        }
+    }
+
+    async createUser(dto: CreateUserDto) {
+        try {
+            return await this.save(dto);
+        } catch (e) {
+            if (/(email)[\s\S]+(already exists)/.test(e.detail)) {
+                throw new BadRequestException('Account with this email already exists.');
+            } else if (/(username)[\s\S]+(already exists)/.test(e.detail)) {
+                throw new BadRequestException('Username with this email already exists.');
+            } else {
+                throw new HttpException('User creation was failed', HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        }
+    }
+
+    async updateUser(id: number, dto: UpdateUserDto) {
+        const user = await this.findById(id);
+        Object.keys(dto).forEach((key) => {
+            user[key] = dto[key];
+        });
+        return await user.save();
     }
 
     async removeById(id: number) {
