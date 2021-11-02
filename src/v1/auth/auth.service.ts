@@ -11,7 +11,11 @@ export class AuthService {
     constructor(private userService: UserService, private jwtService: JwtService) {}
 
     async register(dto: CreateUserDto) {
-        const user = await this.userService.create(dto);
+        const user = await this.userService.create({
+            email: dto.email,
+            username: dto.username,
+            password: dto.password,
+        });
         try {
             return {
                 ...user,
