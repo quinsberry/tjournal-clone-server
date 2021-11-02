@@ -19,10 +19,10 @@ export class PostService {
     ) {}
 
     async create(user: User, dto: CreatePostDto) {
-        const tags = await this.tagRepository.findById(dto.tags);
+        const tags = dto.tags ? await this.tagRepository.findById(dto.tags) : undefined;
         const updatedObj = {
             ...dto,
-            tags: Array.isArray(tags) ? tags : [tags],
+            tags: tags ? (Array.isArray(tags) ? tags : [tags]) : [],
             user,
         };
         return this.postRepository.createPost(updatedObj);

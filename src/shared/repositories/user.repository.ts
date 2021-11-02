@@ -38,7 +38,7 @@ export class UserRepository extends Repository<User> {
                 .where('u.id = :userId', { userId })
                 .andWhere('p.id = :postId', { postId });
 
-            if (relations.includes('comments')) {
+            if (relations?.includes('comments')) {
                 qb.leftJoinAndSelect('u.comments', 'c');
             }
 
@@ -55,38 +55,6 @@ export class UserRepository extends Repository<User> {
             throw new NotFoundException('User not found');
         }
     }
-
-    // search(dto: SearchPostDto) {
-    //     const qb = this.createQueryBuilder('p')
-    //         .leftJoinAndSelect('p.tags', 'tags')
-    //         .limit(dto.take ?? SearchDefaults.Limit)
-    //         .offset(dto.skip ?? SearchDefaults.Skip);
-    //
-    //     if (dto.views) {
-    //         qb.orderBy('views', dto.views);
-    //     }
-    //
-    //     if (dto.body) {
-    //         qb.andWhere('p.body ILIKE :body', { body: `%${dto.body}%` });
-    //     }
-    //
-    //     if (dto.title) {
-    //         qb.andWhere('p.title ILIKE :title', { title: `%${dto.title}%` });
-    //     }
-    //
-    //     if (dto.tags) {
-    //         if (Array.isArray(dto.tags)) {
-    //             // TODO: It doesn't work properly. Selecting just the last tag id.
-    //             dto.tags.map((tag) => {
-    //                 qb.andWhere('tags.id = :tag', { tag });
-    //             });
-    //         } else {
-    //             qb.andWhere('tags.id = :id', { id: dto.tags });
-    //         }
-    //     }
-    //
-    //     return qb.getManyAndCount();
-    // }
 
     async search(dto: SearchUserDto) {
         const qb = this.createQueryBuilder('u')
