@@ -18,15 +18,15 @@ export class UserController {
         return this.userService.search(dto);
     }
 
-    @Get(':id')
-    findOne(@Param('id') id: string) {
-        return this.userService.findOne(+id);
-    }
-
     @UseGuards(JwtAuthGuard)
     @Get('me')
     getProfile(@Request() req) {
         return req.user;
+    }
+
+    @Get(':id')
+    findOne(@Param('id') id: string) {
+        return this.userService.findOne(+id);
     }
 
     @UseGuards(JwtAuthGuard)
